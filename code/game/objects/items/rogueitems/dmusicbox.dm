@@ -1,6 +1,6 @@
 GLOBAL_LIST_EMPTY(musicboxes) //list of all music boxes
 GLOBAL_VAR_INIT(musicboxes_last_upload, 0) //last time of the last upload, to prevent multiple uploads within seconds of eachother
-GLOBAL_VAR_INIT(musicboxes_last_download, 0) //last time of the last download, to prevent new tracks downloaded for every client too frequently
+GLOBAL_VAR_INIT(musicboxes_last_play, 0) //last time of the last played track, to prevent spamming clients too often with play/stop
 
 /datum/looping_sound/dmusloop
 	mid_sounds = list()
@@ -36,7 +36,6 @@ GLOBAL_VAR_INIT(musicboxes_last_download, 0) //last time of the last download, t
 	var/loaded = TRUE
 	var/lastfilechange = 0
 	var/curvol = 100
-	var/playingnewtrack = FALSE
 	anvilrepair = /datum/skill/craft/blacksmithing
 
 /obj/item/dmusicbox/Initialize(mapload)
@@ -120,7 +119,6 @@ GLOBAL_VAR_INIT(musicboxes_last_download, 0) //last time of the last download, t
 	curfile = file("data/jukeboxuploads/[user.ckey]/[rng_number][filename]")
 
 	loaded = FALSE
-	playingnewtrack = TRUE
 	update_icon()
 
 
@@ -136,12 +134,10 @@ GLOBAL_VAR_INIT(musicboxes_last_download, 0) //last time of the last download, t
 			if(!new_channel)
 				to_chat(user, span_warning("TOO MANY MUSIC BOXES IN USE AT THE SAME TIME IN THE WORLD."))
 				return
-			if(playingnewtrack)
-				if(world.time < GLOB.musicboxes_last_download + 15 SECONDS)
-					to_chat(user, span_warning("STILL UPLOADING...")) // lie to the player, we don't want too many server wide music downloads to halt the round too frequently
-					return
-				GLOB.musicboxes_last_download = world.time
-				playingnewtrack = FALSE
+			if(world.time < GLOB.musicboxes_last_play + 10 SECONDS)
+				to_chat(user, span_warning("STILL WARMING UP..."))
+				return
+			GLOB.musicboxes_last_play = world.time
 			playing = TRUE
 			soundloop.channel = new_channel
 			soundloop.mid_sounds = list(curfile)
