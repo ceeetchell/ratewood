@@ -107,13 +107,13 @@
 	H.cmode_music = 'sound/music/cmode/church/combat_acolyte.ogg' // has to be defined here for the selection below to work. sm1 please rewrite cmusic to apply pre-equip.
 	switch(H.patron?.type)
 		if(/datum/patron/divine/astrata)
-			head = /obj/item/clothing/head/roguetown/roguehood/astrata
+			mask = /obj/item/clothing/head/roguetown/roguehood/astrata
 			neck = /obj/item/clothing/neck/roguetown/psicross/astrata
 			wrists = /obj/item/clothing/wrists/roguetown/wrappings
 			shoes = /obj/item/clothing/shoes/roguetown/sandals
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/astrata
 		if(/datum/patron/divine/noc)
-			head = /obj/item/clothing/head/roguetown/nochood
+			mask = /obj/item/clothing/head/roguetown/nochood
 			neck = /obj/item/clothing/neck/roguetown/psicross/noc
 			wrists = /obj/item/clothing/wrists/roguetown/nocwrappings
 			shoes = /obj/item/clothing/shoes/roguetown/sandals
@@ -125,21 +125,20 @@
 			pants = /obj/item/clothing/under/roguetown/tights
 			neck = /obj/item/clothing/neck/roguetown/psicross/abyssor
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/abyssor
-			head = /obj/item/clothing/head/roguetown/roguehood/abyssor
-		if(/datum/patron/divine/dendor) //Dendorites all busted. Play Druid.
-			head = /obj/item/clothing/head/roguetown/dendormask
+			mask = /obj/item/clothing/head/roguetown/roguehood/abyssor
+		if(/datum/patron/divine/dendor) //Garden Hermit
+			mask = /obj/item/clothing/head/roguetown/dendormask
 			neck = /obj/item/clothing/neck/roguetown/psicross/dendor
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/dendor
 			H.cmode_music = 'sound/music/cmode/garrison/combat_warden.ogg'
 		if(/datum/patron/divine/necra)
-			head = /obj/item/clothing/head/roguetown/necrahood
+			mask = /obj/item/clothing/head/roguetown/necrahood
 			neck = /obj/item/clothing/neck/roguetown/psicross/necra
 			shoes = /obj/item/clothing/shoes/roguetown/boots
 			pants = /obj/item/clothing/under/roguetown/trou/leather/mourning
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/necra
 			shirt = /obj/item/clothing/suit/roguetown/armor/leather/vest/black
-			cloak = /obj/item/clothing/cloak/raincloak/mortus
-			backr = /obj/item/rogueweapon/shovel/mort_staff//Meant for morticians, but since we don't have those...
+			backr = /obj/item/rogueweapon/shovel//Meant for morticians, but since we don't have those...
 			backpack_contents = list(/obj/item/ritechalk, /obj/item/flashlight/flare/torch/lantern = 1, /obj/item/natural/bundle/stick = 1, /obj/item/necra_censer = 1)
 		// if(/datum/patron/divine/pestra)
 		// 	neck = /obj/item/clothing/neck/roguetown/psicross/pestra
@@ -149,13 +148,13 @@
 		// 	pants = /obj/item/clothing/under/roguetown/trou/leather/mourning
 		// 	cloak = /obj/item/clothing/cloak/templar/pestran
 		if(/datum/patron/divine/eora) //Eora content from Stonekeep
-			head = /obj/item/clothing/head/roguetown/eoramask
+			mask = /obj/item/clothing/head/roguetown/eoramask
 			neck = /obj/item/clothing/neck/roguetown/psicross/eora
 			shoes = /obj/item/clothing/shoes/roguetown/sandals
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/eora
 			cloak = /obj/item/clothing/cloak/templar/eoran
 		if(/datum/patron/divine/malum)
-			head = /obj/item/clothing/head/roguetown/roguehood
+			mask = /obj/item/clothing/head/roguetown/roguehood
 			neck = /obj/item/clothing/neck/roguetown/psicross/malum
 			shoes = /obj/item/clothing/shoes/roguetown/boots
 			wrists = /obj/item/clothing/wrists/roguetown/wrappings
@@ -163,7 +162,7 @@
 			cloak = /obj/item/clothing/cloak/templar/malumite
 			armor = /obj/item/clothing/suit/roguetown/armor/leather/vest
 		if(/datum/patron/divine/ravox)
-			head = /obj/item/clothing/head/roguetown/roguehood
+			mask = /obj/item/clothing/head/roguetown/roguehood
 			neck = /obj/item/clothing/neck/roguetown/psicross/ravox
 			cloak = /obj/item/clothing/cloak/templar/ravox
 			wrists = /obj/item/clothing/wrists/roguetown/wrappings
@@ -181,7 +180,7 @@
 		// 	var/datum/inspiration/I = new /datum/inspiration(H)
 		// 	I.grant_inspiration(H, bard_tier = BARD_T2)
 		else
-			head = /obj/item/clothing/head/roguetown/roguehood/astrata
+			mask = /obj/item/clothing/head/roguetown/roguehood/astrata
 			neck = /obj/item/clothing/neck/roguetown/psicross/astrata
 			wrists = /obj/item/clothing/wrists/roguetown/wrappings
 			shoes = /obj/item/clothing/shoes/roguetown/sandals
