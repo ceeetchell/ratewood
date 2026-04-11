@@ -55,7 +55,7 @@
 	if(dead)
 		return
 
-	if(stage <= BUSHSAP_STAGE_MATURE)
+	if(stage <= BUSHSAP_STAGE_BUDDING)
 		if(!linked_soil || QDELETED(linked_soil))
 			wither_and_die()
 			return
@@ -68,6 +68,8 @@
 			if(growth_progress <= -BUSHSAP_DEATH_TICKS)
 				wither_and_die()
 				return
+	else
+		growth_progress += dt
 	var/stage_time = (stage == BUSHSAP_STAGE_MATURE) ? BUSHSAP_HEDGE_TIME : BUSHSAP_STAGE_TIME
 	if(growth_progress >= stage_time)
 		advance_stage()
@@ -93,6 +95,9 @@
 			icon_state = "bush2"
 		if(BUSHSAP_STAGE_MATURE)
 			name = "bush"
+			for(var/obj/structure/soil/S in get_turf(src))
+				qdel(S)
+			linked_soil = null
 			// Pick loot type, same weighting as the wild bush
 			if(isnull(bushtype))
 				bushtype = pickweight(list(
@@ -137,7 +142,7 @@
 				. += span_warning("It is looking overgrown. Shear it soon, or it will become a tall hedge in [DisplayTimeText(time_to_hedge)].")
 			else
 				. += span_notice("A mature bush. Shear it with scissors to keep it manageable, or leave it to grow into a taller hedge in [DisplayTimeText(time_to_hedge)].")
-	if(stage <= BUSHSAP_STAGE_MATURE)
+	if(stage <= BUSHSAP_STAGE_BUDDING)
 		if(linked_soil && !QDELETED(linked_soil))
 			if(linked_soil.water <= 45)
 				. += span_warning("The soil beneath it is thirsty.")
@@ -176,7 +181,7 @@
 	return ..()
 
 /obj/structure/bush_sapling/attackby(obj/item/I, mob/living/user, params)
-	if(stage <= BUSHSAP_STAGE_MATURE && !dead && linked_soil)
+	if(stage <= BUSHSAP_STAGE_BUDDING && !dead && linked_soil)
 		if(linked_soil.try_handle_watering(I, user, params))
 			return
 		if(linked_soil.try_handle_fertilizing(I, user, params))

@@ -62,7 +62,7 @@
 	if(dead)
 		return
 
-	if(stage <= TREESAP_STAGE_YOUNG)
+	if(stage <= TREESAP_STAGE_SHRUB)
 		if(!linked_soil || QDELETED(linked_soil))
 			wither_and_die()
 			return
@@ -75,6 +75,8 @@
 			if(growth_progress <= -TREESAP_DEATH_TICKS)
 				wither_and_die()
 				return
+	else
+		growth_progress += dt
 	var/stage_time = (stage == TREESAP_STAGE_YOUNG) ? TREESAP_YOUNG_TIME : TREESAP_STAGE_TIME
 	if(growth_progress >= stage_time)
 		advance_stage()
@@ -98,6 +100,9 @@
 			icon = stage2_icon
 			icon_state = stage2_state
 		if(TREESAP_STAGE_YOUNG)
+			for(var/obj/structure/soil/S in get_turf(src))
+				qdel(S)
+			linked_soil = null
 			icon = stage3_icon
 			icon_state = stage3_state
 			density = TRUE
@@ -136,7 +141,7 @@
 			. += span_info("A small shrub growing steadily.")
 		if(TREESAP_STAGE_YOUNG)
 			. += span_notice("A young tree still taking root. It should grow on its own now.")
-	if(stage <= TREESAP_STAGE_YOUNG)
+	if(stage <= TREESAP_STAGE_SHRUB)
 		if(linked_soil && !QDELETED(linked_soil))
 			if(linked_soil.water <= 45)
 				. += span_warning("The soil beneath it is thirsty.")
@@ -152,7 +157,7 @@
 				. += span_info("The soil beneath it looks fertile.")
 
 /obj/structure/tree_sapling/attackby(obj/item/I, mob/living/user, params)
-	if(stage <= TREESAP_STAGE_YOUNG && !dead && linked_soil)
+	if(stage <= TREESAP_STAGE_SHRUB && !dead && linked_soil)
 		if(linked_soil.try_handle_watering(I, user, params))
 			return
 		if(linked_soil.try_handle_fertilizing(I, user, params))

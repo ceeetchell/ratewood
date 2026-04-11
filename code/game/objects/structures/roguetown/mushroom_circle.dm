@@ -91,9 +91,9 @@ GLOBAL_LIST_EMPTY(mushroom_circles)
 /obj/structure/mushroom_sprout/proc/bloom()
 	if(QDELETED(src))
 		return
-	var/obj/structure/mushroom_circle/new_circle = new(get_turf(src))
-	if(new_circle)
-		new_circle.linked_soil = linked_soil
+	if(linked_soil && !QDELETED(linked_soil))
+		qdel(linked_soil)
+	new /obj/structure/mushroom_circle(get_turf(src))
 	qdel(src)
 
 //==============================================================================
@@ -121,10 +121,6 @@ GLOBAL_LIST_EMPTY(mushroom_circles)
 	var/decay_timerid = null
 	/// world.time moment when final decay will occur after overgrowth starts.
 	var/decay_finish_time = 0
-	/// Soil this circle draws from while still active.
-	var/obj/structure/soil/linked_soil
-	var/soil_water_drain = 1.0 / (1 MINUTES)
-	var/soil_nutrition_drain = 0.75 / (1 MINUTES)
 
 /obj/structure/mushroom_circle/Initialize(mapload)
 	. = ..()
@@ -143,11 +139,6 @@ GLOBAL_LIST_EMPTY(mushroom_circles)
 /obj/structure/mushroom_circle/process(dt)
 	if(!active)
 		return
-	if(linked_soil && !QDELETED(linked_soil) && linked_soil.blessed_time > 0 && linked_soil.water > 0 && linked_soil.nutrition > 0)
-		linked_soil.adjust_water(-dt * soil_water_drain)
-		linked_soil.adjust_nutrition(-dt * soil_nutrition_drain)
-	else
-		maintenance_elapsed += dt
 	maintenance_elapsed += dt
 	if(maintenance_elapsed >= 20 MINUTES)
 		begin_decay()

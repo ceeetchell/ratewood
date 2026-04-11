@@ -174,7 +174,7 @@
 	name = "Rune of Beasts"
 	desc = "A Holy Rune of Dendor. Becoming one with nature is to connect with ones true instinct."
 	icon_state = "dendor_chalky"
-	var/bestialrites = list("Rite of the Lesser Wolf")
+	var/bestialrites = list("Rite of the Lesser Wolf", "Borrowed Madness", "Spider Kinship")
 
 /obj/structure/ritualcircle/dendor/attack_hand(mob/living/user)
 	if(!..())
@@ -208,11 +208,82 @@
 							user.apply_status_effect(/datum/status_effect/debuff/ritesexpended)
 							spawn(120)
 								icon_state = "dendor_chalky"
+		if("Borrowed Madness")
+			if(do_after(user, 50))
+				user.say("I pray for strength...")
+				playsound(loc, 'sound/vo/mobs/vw/idle (1).ogg', 100, FALSE, -1)
+				if(do_after(user, 50))
+					user.say("I pray for pain...")
+					playsound(loc, 'sound/vo/mobs/vw/idle (4).ogg', 100, FALSE, -1)
+					if(do_after(user, 50))
+						loc.visible_message(span_warning("[user] produces an eerie sound as they titter quietly, softly weeping. Their body twitches ever so slightly..."))
+						playsound(loc, 'sound/vo/mobs/vw/bark (1).ogg', 100, FALSE, -1)
+						if(do_after(user, 30))
+							icon_state = "dendor_active"
+							loc.visible_message(span_warning("[user] suddenly snaps their head upward, letting out a twisted howl!"))
+							playsound(loc, 'sound/vo/mobs/wwolf/howl (2).ogg', 100, FALSE, -1)
+							borrowedmadness(src)
+							user.apply_status_effect(/datum/status_effect/debuff/ritesexpended)
+							spawn(120)
+								icon_state = "dendor_chalky"
+		if("Spider Kinship")
+			if(do_after(user, 50))
+				user.say("I call to the ruthless wilds,")
+				playsound(loc, 'sound/vo/mobs/spider/idle (1).ogg', 100, FALSE, -1)
+				if(do_after(user, 50))
+					user.say("... grant me an agile form of your dominion..!")
+					playsound(loc, 'sound/vo/mobs/spider/idle (3).ogg', 100, FALSE, -1)
+					if(do_after(user, 30))
+						icon_state = "dendor_active"
+						loc.visible_message(span_warning("[user] seizes up, suddenly covered in a mess of silky webs, which then slough away into a sticky pile!"))
+						playsound(loc, 'sound/vo/mobs/spider/pain.ogg', 100, FALSE, -1)
+						spiderkinship(src)
+						user.apply_status_effect(/datum/status_effect/debuff/ritesexpended)
+						spawn(120)
+							icon_state = "dendor_chalky"
 
 /obj/structure/ritualcircle/dendor/proc/lesserwolf(src)
 	var/ritualtargets = view(1, loc)
 	for(var/mob/living/carbon/human/target in ritualtargets)
 		target.apply_status_effect(/datum/status_effect/buff/lesserwolf)
+
+/obj/structure/ritualcircle/dendor/proc/borrowedmadness(src)
+	var/ritualtargets = view(0, loc)
+	for(var/mob/living/carbon/human/target in ritualtargets)
+		if(!istype(target.patron, /datum/patron/divine/dendor))
+			to_chat(target, span_warning("The ritual's power does not recognize me..."))
+			continue
+		to_chat(target, span_userdanger("Do you like hurting other people?"))
+		target.flash_fullscreen("redflash3")
+		target.emote("agony")
+		target.Unconscious(200)
+		target.Knockdown(200)
+		target.mind?.AddSpell(new /obj/effect/proc_holder/spell/targeted/shapeshift/dendormole)
+
+/obj/structure/ritualcircle/dendor/proc/spiderkinship(src)
+	var/ritualtargets = view(0, loc)
+	for(var/mob/living/carbon/human/target in ritualtargets)
+		if(!istype(target.patron, /datum/patron/divine/dendor))
+			to_chat(target, span_warning("The ritual's power does not recognize me..."))
+			continue
+		to_chat(target, span_userdanger("The webs of madness and nature whisper to me. The webs are eternal. Long live the Nest!"))
+		target.flash_fullscreen("redflash3")
+		target.emote("agony")
+		target.Unconscious(100)
+		target.Knockdown(200)
+		target.mind?.AddSpell(new /obj/effect/proc_holder/spell/targeted/shapeshift/mireboi)
+
+/obj/effect/proc_holder/spell/targeted/shapeshift/dendormole
+	name = "Borrowed Madness"
+	desc = "Assume the maddened form granted by Dendor's rite."
+	shapeshift_type = /mob/living/simple_animal/hostile/retaliate/rogue/mole
+	pick_again = TRUE
+
+/obj/effect/proc_holder/spell/targeted/shapeshift/mireboi
+	name = "Spider Kinship"
+	desc = "Assume a mire-spider form through Dendor's wild kinship."
+	shapeshift_type = /mob/living/simple_animal/hostile/retaliate/rogue/mirespider
+	pick_again = TRUE
 
 
 /obj/structure/ritualcircle/malum
