@@ -7,22 +7,36 @@
 	noaa = TRUE
 
 /datum/intent/steal/on_mmb(atom/target, mob/living/user, params)
-	if(!target.Adjacent(user))
-		return
-
 	if(ishuman(target))
 		var/mob/living/carbon/human/user_human = user
 		var/mob/living/carbon/human/target_human = target
+		var/list/stealmods = list("chance_add" = 0, "range_add" = 0)
+		SEND_SIGNAL(user_human, "steal_mods_query", stealmods)
+		var/range_add = stealmods["range_add"]
+		if(!isnum(range_add))
+			range_add = 0
+		var/steal_radius = 1 + range_add
+		if(get_dist(user_human, target_human) > steal_radius)
+			return
 		var/thiefskill = user.get_skill_level(/datum/skill/misc/stealing) + (has_world_trait(/datum/world_trait/matthios_fingers) ? 1 : 0)
 		var/stealroll = roll("[thiefskill]d6")
 		var/targetperception = (target_human.STAPER)
+		var/chance_add = stealmods["chance_add"]
+		if(!isnum(chance_add))
+			chance_add = 0
+		var/effective_targetperception = targetperception
+		if(chance_add > 0)
+			effective_targetperception = max(0, round(targetperception * (100 - chance_add) / 100))
 		var/list/stealablezones = list("chest", "neck", "groin", "r_hand", "l_hand")
 		var/list/stealpos = list()
 		var/list/mobsbehind = list()
 		var/exp_to_gain = user_human.STAINT
 		to_chat(user, span_notice("I try to steal from [target_human]..."))	
 		if(do_after(user, 5, target = target_human, progress = 0))
-			if(stealroll > targetperception)
+			if(get_dist(user_human, target_human) > steal_radius)
+				to_chat(user, span_warning("[target_human] is too far away."))
+				return
+			if(stealroll > effective_targetperception)
 				//TODO add exp here
 				// RATWOOD MODULAR START
 				if(target_human.cmode)
@@ -78,7 +92,7 @@
 				user_human.log_message("has attempted to pickpocket [key_name(target_human)]", LOG_ATTACK, color="white")
 				user_human.visible_message(span_danger("[user_human] failed to pickpocket [target_human]!"))
 				to_chat(target_human, span_danger("[user_human] tried pickpocketing me!"))
-			if(stealroll < targetperception)
+			if(stealroll < effective_targetperception)
 				target_human.log_message("has had an attempted pickpocket by [key_name(user_human)]", LOG_ATTACK, color="white")
 				user_human.log_message("has attempted to pickpocket [key_name(target_human)]", LOG_ATTACK, color="white")
 				to_chat(user, span_danger("I failed to pick the pocket!"))

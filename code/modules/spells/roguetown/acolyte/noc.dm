@@ -127,18 +127,12 @@
 				var/secular_diagnose = new /obj/effect/proc_holder/spell/invoked/diagnose/secular
 				user.mind?.AddSpell(secular_diagnose)
 			add_spells(user, utility_bundle, grant_all = TRUE)
-			user.mind?.RemoveSpell(src.type)
 		if("Offense")
 			add_spells(user, offensive_bundle, grant_all = TRUE)
 			ADD_TRAIT(user, TRAIT_MAGEARMOR, TRAIT_MIRACLE)
-			user.mind?.RemoveSpell(src.type)
 		if("Buffs")
-			if(!user.mind?.has_spell(/obj/effect/proc_holder/spell/invoked/incantation))
-				var/circuitus = new /obj/effect/proc_holder/spell/invoked/incantation
-				user.mind?.AddSpell(circuitus)
 			add_spells(user, buff_bundle, choice_count = 4)
 			ADD_TRAIT(user, TRAIT_MAGEARMOR, TRAIT_MIRACLE)
-			user.mind?.RemoveSpell(src.type)
 		else
 			revert_cast()
 
@@ -161,8 +155,6 @@
 		for(var/spell_type in spells)
 			var/obj/effect/proc_holder/spell/new_spell = new spell_type
 			user?.mind.AddSpell(new_spell)
-	if(!length(spells))
-		user.mind?.RemoveSpell(src.type)
 
 //15 PER peer-ahead.
 /obj/effect/proc_holder/spell/invoked/noc_sight

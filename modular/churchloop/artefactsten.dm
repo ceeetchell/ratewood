@@ -838,6 +838,9 @@ Necra's Censer (by ARefrigerator)
   PESTRA PERSTRA
 ======================================*/
 
+#define SURGERY_STAPLE_LIFETIME (60 SECONDS)
+
+
 // STAPLES
 
 /obj/item/surgery_staple
@@ -849,40 +852,94 @@ Necra's Censer (by ARefrigerator)
 	item_flags = ABSTRACT
 	sharpness = IS_BLUNT
 	anchored = TRUE
+
+	embedding = list(
+		"embed_chance" = 100,
+		"embedded_fall_chance" = 0,
+		"embedded_pain_chance" = 0,
+		"embedded_pain_multiplier" = 0,
+		"embedded_fall_pain_multiplier" = 0,
+		"embedded_impact_pain_multiplier" = 0,
+		"embedded_unsafe_removal_pain_multiplier" = 0,
+		"embedded_unsafe_removal_time" = 0,
+		"embedded_ignore_throwspeed_threshold" = TRUE,
+		"embedded_bloodloss" = 0,
+		"retract_limbs" = FALSE,
+		"clamp_limbs" = FALSE
+	)
+
 	var/tmp/_pending_delete = FALSE
+	var/tmp/_staple_timer = null
+
+
+/obj/item/surgery_staple/proc/start_staple_timer()
+	if(_staple_timer)
+		deltimer(_staple_timer)
+
+	_staple_timer = addtimer(CALLBACK(src, PROC_REF(expire_staple)), SURGERY_STAPLE_LIFETIME, TIMER_STOPPABLE)
+
+	return TRUE
+
+
+/obj/item/surgery_staple/proc/expire_staple()
+	if(_pending_delete)
+		return
+
+	if(QDELETED(src))
+		return
+
+	_pending_delete = TRUE
+	qdel(src)
+
 
 /obj/item/surgery_staple/Moved(oldloc, dir, forced = FALSE)
 	. = ..()
+
 	if(_pending_delete)
 		return
+
 	if(isnull(loc))
 		return
+
 	if(!istype(loc, /obj/item/bodypart))
 		_pending_delete = TRUE
 		qdel(src)
+
 
 /obj/item/surgery_staple/attack_hand(mob/living/user)
 	if(!_pending_delete)
 		_pending_delete = TRUE
 		qdel(src)
+
 	return
+
+
+/obj/item/surgery_staple/Destroy()
+	if(_staple_timer)
+		deltimer(_staple_timer)
+		_staple_timer = null
+
+	return ..()
+
 
 /obj/item/surgery_staple/hemostat
 	name = "hemostat staple"
 	tool_behaviour = TOOL_HEMOSTAT
+
 
 /obj/item/surgery_staple/retractor
 	name = "retractor staple"
 	tool_behaviour = TOOL_RETRACTOR
 
 
-// multitool
+
+// MULTITOOL
 
 /obj/item/rogueweapon/surgery/multitool
 	name = "surgical multitool"
 	desc = "A compact, blessed device that unfolds into whatever the surgeon needs."
 	icon = 'icons/roguetown/items/artefactsten.dmi'
-	icon_state = "scapelpestra"
+	icon_state = "scalpelpestra"
 	gripsprite = FALSE
 	wlength = WLENGTH_SHORT
 	w_class = WEIGHT_CLASS_SMALL
@@ -899,8 +956,27 @@ Necra's Censer (by ARefrigerator)
 	grid_height = 64
 
 	var/current_mode = "scalpel"
+	var/tmp/obj/item/needle/pestra/_pestra_needle = null
 
-	var/list/_modes_order = list("scalpel","saw","hemostat","retractor","bonesetter","suture","cautery")
+	var/list/_modes_order = list(
+		"scalpel",
+		"saw",
+		"hemostat",
+		"retractor",
+		"bonesetter",
+		"suture",
+		"cautery"
+	)
+
+	var/list/_mode_labels = list(
+		"scalpel" = "Scalpel",
+		"saw" = "Saw",
+		"hemostat" = "Hemostat",
+		"retractor" = "Retractor",
+		"bonesetter" = "Bonesetter",
+		"suture" = "Suture",
+		"cautery" = "Cautery"
+	)
 
 	var/list/_mode_params = list(
 		"scalpel" = list(
@@ -941,7 +1017,7 @@ Necra's Censer (by ARefrigerator)
 			"damtype" = BRUTE,
 			"force" = 8,
 			"intents" = list(/datum/intent/use),
-			"icon_state" = "retractorpestra"
+			"icon_state" = "bonesetterpestra"
 		),
 		"suture" = list(
 			"tool_behaviour" = TOOL_SUTURE,
@@ -962,11 +1038,15 @@ Necra's Censer (by ARefrigerator)
 	)
 
 
+
 /proc/_is_use_intent(mob/living/user)
 	return istype(user?.a_intent, /datum/intent/use)
 
+
 /proc/_get_target_bodypart(mob/living/carbon/human/H, mob/living/user)
-	if(!H || !user) return null
+	if(!H || !user)
+		return null
+
 	return H.get_bodypart(check_zone(user.zone_selected))
 
 
@@ -974,19 +1054,95 @@ Necra's Censer (by ARefrigerator)
 	. = ..()
 	_apply_mode(current_mode, TRUE)
 
-/obj/item/rogueweapon/surgery/multitool/attack_self(mob/user)
-	_cycle_mode(user)
+
+/obj/item/rogueweapon/surgery/multitool/Destroy()
+	QDEL_NULL(_pestra_needle)
+	return ..()
+
+
+/obj/item/rogueweapon/surgery/multitool/attack_self(mob/living/user)
+	_open_mode_radial(user)
 	return TRUE
 
+
 /obj/item/rogueweapon/surgery/multitool/AltClick(mob/living/user)
-	_cycle_mode(user)
+	_open_mode_radial(user)
+	return TRUE
+
+
+/obj/item/rogueweapon/surgery/multitool/proc/_get_pestra_needle()
+	if(!_pestra_needle || QDELETED(_pestra_needle))
+		_pestra_needle = new /obj/item/needle/pestra(src)
+
+	return _pestra_needle
+
+/obj/item/rogueweapon/surgery/multitool/proc/_open_mode_radial(mob/living/user)
+	if(!user)
+		return FALSE
+
+	if(QDELETED(src) || QDELETED(user))
+		return FALSE
+
+	if(!(src in user.contents))
+		return FALSE
+
+	var/list/choices = list()
+	var/list/mode_by_label = list()
+
+	for(var/mode in _modes_order)
+		var/list/P = _mode_params[mode]
+		if(!islist(P))
+			continue
+
+		var/label = _mode_labels[mode] || mode
+		var/image/I = image(icon = icon, icon_state = P["icon_state"])
+
+		choices[label] = I
+		mode_by_label[label] = mode
+
+	var/choice = show_radial_menu(
+		user,
+		src,
+		choices,
+		custom_check = CALLBACK(src, PROC_REF(_radial_can_use), user),
+		radius = 42,
+		require_near = TRUE
+	)
+
+	if(!choice)
+		return FALSE
+	var/selected_mode = mode_by_label[choice]
+	if(!selected_mode)
+		return FALSE
+	if(selected_mode == current_mode)
+		return TRUE
+	_apply_mode(selected_mode)
+
+	to_chat(user, span_notice("Multitool mode: [uppertext(current_mode)]."))
+	return TRUE
+
+
+
+/obj/item/rogueweapon/surgery/multitool/proc/_radial_can_use(mob/living/user)
+	if(!user)
+		return FALSE
+	if(QDELETED(src) || QDELETED(user))
+		return FALSE
+	if(!(src in user.contents))
+		return FALSE
+	return TRUE
+
+
 
 /obj/item/rogueweapon/surgery/multitool/proc/_apply_mode(mode as text, silent = FALSE)
-	if(!(mode in _modes_order)) return
-	current_mode = mode
+	if(!(mode in _modes_order))
+		return
 
 	var/list/P = _mode_params[mode]
-	if(!islist(P)) return
+	if(!islist(P))
+		return
+
+	current_mode = mode
 
 	force = P["force"]
 	sharpness = P["sharpness"]
@@ -996,28 +1152,66 @@ Necra's Censer (by ARefrigerator)
 	tool_behaviour = P["tool_behaviour"]
 
 	update_icon()
+
 	if(!silent)
 		playsound(src, 'sound/foley/equip/swordsmall2.ogg', 50, FALSE)
+
+
 
 /obj/item/rogueweapon/surgery/multitool/proc/_cycle_mode(mob/user)
 	var/i = _modes_order.Find(current_mode) || 0
 	i++
-	if(i > _modes_order.len) i = 1
+
+	if(i > _modes_order.len)
+		i = 1
+
 	_apply_mode(_modes_order[i])
-	if(user) to_chat(user, span_notice("Multitool mode: [uppertext(current_mode)]."))
+
+	if(user)
+		to_chat(user, span_notice("Multitool mode: [uppertext(current_mode)]."))
+
+
 
 /obj/item/rogueweapon/surgery/multitool/get_temperature()
 	if(current_mode == "cautery")
 		return FIRE_MINIMUM_TEMPERATURE_TO_SPREAD
+
 	return ..()
+
+
 
 /obj/item/rogueweapon/surgery/multitool/proc/_is_passive_surgery_mode()
 	return current_mode in list("hemostat", "retractor", "bonesetter", "suture")
 
+
+
+/obj/item/rogueweapon/surgery/multitool/attack_obj(obj/O, mob/living/user)
+	if(current_mode == "suture" && _is_use_intent(user) && isitem(O))
+		var/obj/item/needle/pestra/N = _get_pestra_needle()
+
+		if(N)
+			N.attack_obj(O, user)
+
+		return TRUE
+
+	return ..()
+
+
+
 /obj/item/rogueweapon/surgery/multitool/pre_attack(atom/A, mob/living/user, params)
+	if(current_mode == "suture" && _is_use_intent(user) && istype(A, /mob/living))
+		var/mob/living/L = A
+		var/obj/item/needle/pestra/N = _get_pestra_needle()
+
+		if(N)
+			N.sew(L, user)
+
+		return TRUE
+
 	if(ishuman(A) && (current_mode == "hemostat" || current_mode == "retractor"))
 		var/mob/living/carbon/human/H = A
 		var/obj/item/bodypart/part = _get_target_bodypart(H, user)
+
 		if(!part)
 			return TRUE
 
@@ -1030,12 +1224,15 @@ Necra's Censer (by ARefrigerator)
 			return TRUE
 
 		var/obj/item/surgery_staple/S
+
 		if(current_mode == "hemostat")
 			S = new /obj/item/surgery_staple/hemostat(get_turf(H))
 		else
 			S = new /obj/item/surgery_staple/retractor(get_turf(H))
 
 		if(part.add_embedded_object(S, TRUE))
+			S.start_staple_timer()
+
 			if(current_mode == "hemostat")
 				user.visible_message(
 					span_info("[user] sets hemostat staples in [H]'s [part.name]."),
@@ -1049,27 +1246,24 @@ Necra's Censer (by ARefrigerator)
 			playsound(H, 'sound/foley/equip/swordsmall2.ogg', 50, FALSE)
 		else
 			qdel(S)
-
 		return TRUE
-
 	if(!_is_use_intent(user) || !ishuman(A))
 		return ..()
-
 	return ..()
 
+
+
 /obj/item/rogueweapon/surgery/multitool/proc/_zone_has_same_staple(obj/item/bodypart/part)
-	if(!part) return FALSE
+	if(!part)
+		return FALSE
 	for(var/obj/item/embedded as anything in part.embedded_objects)
-		if(!istype(embedded, /obj/item/surgery_staple)) continue
+		if(!istype(embedded, /obj/item/surgery_staple))
+			continue
 		if(current_mode == "hemostat" && embedded.tool_behaviour == TOOL_HEMOSTAT)
 			return TRUE
 		if(current_mode == "retractor" && embedded.tool_behaviour == TOOL_RETRACTOR)
 			return TRUE
 	return FALSE
-
-
-
-
 
 /*=========================================================
   RAVOX TRACE LENS
@@ -1286,38 +1480,34 @@ Necra's Censer (by ARefrigerator)
  ***************************************************/
 
 /datum/element/xylix_theft_mods
-    var/chance_bonus_pct = 25
-    var/range_bonus_tiles = 1
-    var/xp_multiplier = 1.5
+	element_flags = ELEMENT_BESPOKE
 
-/datum/element/xylix_theft_mods/Attach(datum/target, chance_b = 15, range_b = 1, xp_mult_b = 1.5)
-    . = ..()
-    if(!ismob(target))
-        return ELEMENT_INCOMPATIBLE
-    chance_bonus_pct = chance_b
-    range_bonus_tiles = range_b
-    xp_multiplier = xp_mult_b
-    RegisterSignal(target, "steal_mods_query", PROC_REF(_on_mods_query))
-    RegisterSignal(target, "steal_xp_query",   PROC_REF(_on_xp_query))
+	var/chance_bonus_pct = 25
+	var/range_bonus_tiles = 1
+
+/datum/element/xylix_theft_mods/Attach(datum/target, chance_b = 25, range_b = 1)
+	. = ..()
+
+	if(!ismob(target))
+		return ELEMENT_INCOMPATIBLE
+
+	chance_bonus_pct = chance_b
+	range_bonus_tiles = range_b
+
+	RegisterSignal(target, "steal_mods_query", PROC_REF(_on_mods_query))
 
 /datum/element/xylix_theft_mods/Detach(datum/target)
-    UnregisterSignal(target, list("steal_mods_query", "steal_xp_query"))
-    return ..()
+	UnregisterSignal(target, "steal_mods_query")
+	return ..()
 
 /datum/element/xylix_theft_mods/proc/_on_mods_query(datum/source, list/mods)
-    SIGNAL_HANDLER
-    if(!islist(mods)) return
-    mods["chance_add"] = (mods["chance_add"] || 0) + chance_bonus_pct
-    mods["range_add"]  = (mods["range_add"]  || 0) + range_bonus_tiles
+	SIGNAL_HANDLER
 
-/datum/element/xylix_theft_mods/proc/_on_xp_query(datum/source, list/xpmods, skill)
-    SIGNAL_HANDLER
-    if(!islist(xpmods)) return
-    if(!ispath(skill)) return
-    if(skill == /datum/skill/misc/stealing)
-        var/m = xpmods["xp_mult"]
-        if(!isnum(m)) m = 1
-        xpmods["xp_mult"] = m * xp_multiplier
+	if(!islist(mods))
+		return
+
+	mods["chance_add"] = (mods["chance_add"] || 0) + chance_bonus_pct
+	mods["range_add"] = (mods["range_add"] || 0) + range_bonus_tiles
 
 
 /************************
@@ -1325,66 +1515,84 @@ Necra's Censer (by ARefrigerator)
  **************************************************/
 
 /obj/item/clothing/gloves/xylix
-    name = "Xylix gloves"
-    desc = "Gloves favored by Xylix's acolytes. Fingers feel lighter, reach seems longer."
-    icon = 'icons/roguetown/items/artefactsten.dmi'
-    icon_state = "xylixartefact"
-    slot_flags = ITEM_SLOT_GLOVES
-    w_class = WEIGHT_CLASS_SMALL
-    body_parts_covered = HANDS
-    body_parts_inherent = HANDS
-    sleeved = 'icons/roguetown/clothing/onmob/gloves.dmi'
-    mob_overlay_icon = 'icons/roguetown/clothing/onmob/gloves.dmi'
-    bloody_icon_state = "bloodyhands"
-    sleevetype = "shirt"
-    resistance_flags = FIRE_PROOF
-    blocksound = SOFTHIT
-    max_integrity = 300
-    sellprice = 12
-    blade_dulling = DULLING_BASHCHOP
-    break_sound = 'sound/foley/cloth_rip.ogg'
-    drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
-    anvilrepair = null
-    sewrepair = TRUE
-    salvage_result = /obj/item/natural/fur
-    var/mob/living/_buff_owner
+	name = "Pickpocket gloves"
+	desc = "Gloves favored by Xylix's acolytes. Fingers feel lighter, reach seems longer."
+	icon = 'icons/roguetown/items/artefactsten.dmi'
+	icon_state = "xylixartefact"
+
+	slot_flags = ITEM_SLOT_GLOVES
+	w_class = WEIGHT_CLASS_SMALL
+
+	body_parts_covered = HANDS
+	body_parts_inherent = HANDS
+
+	sleeved = 'icons/roguetown/clothing/onmob/gloves.dmi'
+	mob_overlay_icon = 'icons/roguetown/clothing/onmob/gloves.dmi'
+	bloody_icon_state = "bloodyhands"
+	sleevetype = "shirt"
+
+	resistance_flags = FIRE_PROOF
+	blocksound = SOFTHIT
+	max_integrity = 300
+
+	sellprice = 12
+	blade_dulling = DULLING_BASHCHOP
+	break_sound = 'sound/foley/cloth_rip.ogg'
+	drop_sound = 'sound/foley/dropsound/cloth_drop.ogg'
+
+	anvilrepair = null
+	sewrepair = TRUE
+	salvage_result = /obj/item/natural/fur
+
+	var/mob/living/_buff_owner
+	var/chance_bonus_pct = 25
+	var/range_bonus_tiles = 1
 
 /obj/item/clothing/gloves/xylix/equipped(mob/living/user, slot)
-    . = ..()
-    if(!isliving(user))
-        return
+	. = ..()
 
-    if(slot == SLOT_GLOVES)
-        _buff_apply(user)
-    else
-        if(_buff_owner)
-            _buff_remove(_buff_owner)
+	if(!isliving(user))
+		return
+
+	if(slot == SLOT_GLOVES)
+		_buff_apply(user)
+	else if(_buff_owner)
+		_buff_remove(_buff_owner)
 
 /obj/item/clothing/gloves/xylix/dropped(mob/user)
-    . = ..()
-    if(_buff_owner)
-        _buff_remove(_buff_owner)
+	. = ..()
+
+	if(_buff_owner)
+		_buff_remove(_buff_owner)
 
 /obj/item/clothing/gloves/xylix/Destroy()
-    if(_buff_owner)
-        _buff_remove(_buff_owner)
-    _buff_owner = null
-    return ..()
+	if(_buff_owner)
+		_buff_remove(_buff_owner)
+
+	_buff_owner = null
+	return ..()
 
 /obj/item/clothing/gloves/xylix/proc/_buff_apply(mob/living/user)
-    if(_buff_owner == user)
-        return
-    if(_buff_owner)
-        _buff_remove(_buff_owner)
-    _buff_owner = user
-    user.AddElement(/datum/element/xylix_theft_mods, 15, 1, 1.5)
+	if(!isliving(user))
+		return
+
+	if(_buff_owner == user)
+		return
+
+	if(_buff_owner)
+		_buff_remove(_buff_owner)
+
+	_buff_owner = user
+	user.AddElement(/datum/element/xylix_theft_mods, chance_bonus_pct, range_bonus_tiles)
 
 /obj/item/clothing/gloves/xylix/proc/_buff_remove(mob/living/user)
-    if(!isliving(user))
-        return
-    user.RemoveElement(/datum/element/xylix_theft_mods)
-    if(_buff_owner == user)
-        _buff_owner = null
+	if(!isliving(user))
+		return
+
+	user.RemoveElement(/datum/element/xylix_theft_mods, chance_bonus_pct, range_bonus_tiles)
+
+	if(_buff_owner == user)
+		_buff_owner = null
 
 // ASS TRATA
 
