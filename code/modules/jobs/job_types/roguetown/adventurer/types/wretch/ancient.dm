@@ -72,6 +72,7 @@
 		H.dna.species.soundpack_f = new /datum/voicepack/female/haughty()
 	H.set_blindness(0)
 	H.energy = H.max_energy //Just in case.
+	REMOVE_TRAIT(H, TRAIT_EASYDISMEMBER, TRAIT_GENERIC)
 	to_chat(H, span_danger("You are an ancient warrior risen from death, not a comedic skeleton. Be menacing and play with gravitas rather than humour."))
 
 /obj/effect/proc_holder/spell/invoked/bonemend
