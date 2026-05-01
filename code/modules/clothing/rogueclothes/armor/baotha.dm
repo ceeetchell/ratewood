@@ -133,5 +133,5 @@
 	pants = /obj/item/clothing/under/roguetown/platelegs/baotha
 	wrists = /obj/item/clothing/wrists/roguetown/bracers/baotha
 	head = /obj/item/clothing/head/roguetown/helmet/heavy/baotha
-	r_hand = /obj/item/rogueweapon/whip/spiderwhip
+	r_hand = /obj/item/rogueweapon/whip/spiderwhip/baotha
 	H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/mending/lesser)

@@ -206,13 +206,17 @@
 // 	name = "Perfect Agony"
 // 	desc = "Wicked, wicked, wicked."
 // 	icon_state = "CHANGEME"
-// 	// sellprice = 250
-// 	// smeltresult = /obj/item/ingot/steel
 // 	possible_item_intents = list(/datum/intent/whip/lash/holy, /datum/intent/whip/crack, /datum/intent/whip/punish, /datum/intent/dagger/sucker_punch) // sucker as a little flavor and bonus. 
 // 	force = 22
 // 	minstr = 8
-// 	anvilrepair = /datum/skill/craft/weaponsmithing
 
 // /obj/item/rogueweapon/whip/baotha/Initialize(mapload)
 // 	. = ..()
 // 	AddComponent(/datum/component/cursed_item, TRAIT_DEPRAVED, "WHIP")
+
+/obj/item/rogueweapon/whip/spiderwhip/baotha
+	desc = "This one hums faintly to you. A song from your childhood?"
+
+/obj/item/rogueweapon/whip/spiderwhip/baotha/Initialize(mapload)
+	. = ..()
+	AddComponent(/datum/component/cursed_item, TRAIT_DEPRAVED, "WHIP")
