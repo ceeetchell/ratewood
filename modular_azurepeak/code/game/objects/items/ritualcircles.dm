@@ -1930,7 +1930,7 @@
 			user.say("Lady, my Lady...")
 			if(!do_after(user, 5 SECONDS))
 				return
-			user.say("Wrap thee in darkness, swaddle thee in dark majesty, and armor thee in desire...")
+			user.say("Wrap thee in darkness, swaddle thee in cold bliss, and armor thee in desire...")
 			if(!do_after(user, 5 SECONDS))
 				return
 			user.say("Let all those who look upon me see thy beauty and despair!!")
