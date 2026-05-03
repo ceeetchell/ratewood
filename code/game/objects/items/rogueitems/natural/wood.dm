@@ -123,24 +123,8 @@
 		/datum/crafting_recipe/roguetown/survival/pipe,
 		/datum/crafting_recipe/roguetown/survival/mantrap,
 		/datum/crafting_recipe/roguetown/survival/paperscroll,
-		/datum/crafting_recipe/roguetown/survival/boneaxe,
-		/datum/crafting_recipe/roguetown/survival/prosthetic/woodleftarm,
-		/datum/crafting_recipe/roguetown/survival/prosthetic/woodrightarm,
-		/datum/crafting_recipe/roguetown/survival/prosthetic/woodleftleft,
-		/datum/crafting_recipe/roguetown/survival/prosthetic/woodrightleg,
 		/datum/crafting_recipe/roguetown/survival/tarot_deck,
-		/datum/crafting_recipe/roguetown/survival/tarot_deck_majorarcana,
-		/datum/crafting_recipe/roguetown/survival/heatershield,
-		/datum/crafting_recipe/roguetown/survival/peasantry/thresher/whetstone,
-		/datum/crafting_recipe/roguetown/survival/peasantry/shovel/whetstone,
-		/datum/crafting_recipe/roguetown/survival/peasantry/hoe/whetstone,
-		/datum/crafting_recipe/roguetown/survival/peasantry/pitchfork/whetstone,
-		/datum/crafting_recipe/roguetown/survival/peasantry/peasantwarflail,
-		/datum/crafting_recipe/roguetown/survival/peasantry/waraxe,
-		/datum/crafting_recipe/roguetown/survival/peasantry/warspear_hoe,
-		/datum/crafting_recipe/roguetown/survival/peasantry/warspear_pitchfork,
-		/datum/crafting_recipe/roguetown/survival/peasantry/scythe,)
-		/datum/crafting_recipe/roguetown/survival/boneaxe,)
+		/datum/crafting_recipe/roguetown/survival/tarot_deck_majorarcana
 
 	AddElement(
 		/datum/element/slapcrafting,\
