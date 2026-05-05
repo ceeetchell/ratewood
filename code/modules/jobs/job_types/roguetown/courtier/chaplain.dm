@@ -25,7 +25,7 @@ Only when swords are drawn might your true loyalties be discovered."
 	round_contrib_points = 5
 	social_rank = SOCIAL_RANK_MINOR_NOBLE
 	virtue_restrictions = list(/datum/virtue/utility/noble)//Hmm. I duno, they're PRETTY noble-like.
-	job_traits = list(TRAIT_RITUALIST, TRAIT_EMPATH)//no homestead expert because we want them doing intrigue intead of gardening?
+	job_traits = list(TRAIT_EMPATH)//no homestead expert because we want them doing intrigue intead of gardening?
 	advclass_cat_rolls = list(CTAG_CHAPLAIN = 2)
 	job_subclasses = list(
 		/datum/advclass/chaplain
