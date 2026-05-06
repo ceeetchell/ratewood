@@ -426,7 +426,7 @@
 "gj" = (
 /obj/item/rogueweapon/pick,
 /turf/open/floor/rogue/dirt/road,
-/area/rogue/indoors/cave)
+/area/rogue/under/cave)
 "gr" = (
 /obj/machinery/gear_painter,
 /turf/open/floor/rogue/ruinedwood{
@@ -587,7 +587,7 @@
 /area/rogue/outdoors/woods/vampire_lair)
 "jj" = (
 /turf/closed/mineral/random/rogue/high,
-/area/rogue/indoors/cave)
+/area/rogue/under/cave)
 "jv" = (
 /obj/structure/fluff/walldeco/bath/wallrope{
 	pixel_x = -32
@@ -637,7 +637,7 @@
 	},
 /obj/structure/fluff/railing/border,
 /turf/open/floor/rogue/cobble/mossy,
-/area/rogue/indoors/cave)
+/area/rogue/under/cave)
 "kf" = (
 /obj/structure/roguewindow,
 /obj/structure/curtain/directional/black{
@@ -1822,7 +1822,7 @@
 "GB" = (
 /obj/machinery/light/rogue/torchholder/c,
 /turf/open/floor/rogue/cobble/mossy,
-/area/rogue/indoors/cave)
+/area/rogue/under/cave)
 "GJ" = (
 /obj/structure/fluff/walldeco/church/line{
 	dir = 1
@@ -2064,7 +2064,7 @@
 /area/rogue/indoors/vampire_manor)
 "Kr" = (
 /turf/open/floor/rogue/cobble/mossy,
-/area/rogue/indoors/cave)
+/area/rogue/under/cave)
 "Kx" = (
 /turf/closed/wall/mineral/rogue/stone,
 /area/rogue/indoors/vampire_manor)
@@ -2180,7 +2180,7 @@
 /area/rogue/outdoors/woods/vampire_lair)
 "Mv" = (
 /turf/closed/mineral/rogue/bedrock,
-/area/rogue/indoors/cave)
+/area/rogue/under/cave)
 "MA" = (
 /obj/machinery/light/rogue/oven/west,
 /obj/machinery/light/rogue/hearth{
@@ -2569,7 +2569,7 @@
 /area/rogue/outdoors/woods/vampire_lair)
 "SR" = (
 /turf/open/floor/rogue/dirt/road,
-/area/rogue/indoors/cave)
+/area/rogue/under/cave)
 "Tf" = (
 /obj/structure/rack/rogue/shelf/biggest,
 /obj/structure/fluff/walldeco/chains,
@@ -2600,7 +2600,7 @@
 	dir = 10
 	},
 /turf/open/floor/rogue/cobble/mossy,
-/area/rogue/indoors/cave)
+/area/rogue/under/cave)
 "Tn" = (
 /obj/structure/chair/bench/couchablack,
 /obj/structure/bookcase/random{
@@ -2878,7 +2878,7 @@
 /area/rogue/indoors/vampire_manor)
 "XL" = (
 /turf/closed/wall/mineral/rogue/craftstone,
-/area/rogue/indoors/cave)
+/area/rogue/under/cave)
 "XP" = (
 /obj/structure/chair/bench/couchablack/r,
 /obj/structure/bookcase/random{
