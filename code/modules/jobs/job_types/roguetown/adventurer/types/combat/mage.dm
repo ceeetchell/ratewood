@@ -12,7 +12,7 @@
 		STATKEY_INT = 3,
 		STATKEY_SPD = 1,
 	)
-	subclass_spellpoints = 18
+	subclass_spellpoints = 15
 	subclass_skills = list(
 		/datum/skill/combat/polearms = SKILL_LEVEL_APPRENTICE,
 		/datum/skill/misc/medicine = SKILL_LEVEL_NOVICE,
@@ -78,7 +78,7 @@
 				H.adjust_skillrank_up_to(/datum/skill/combat/wrestling, 2, TRUE)
 				H.adjust_skillrank_up_to(/datum/skill/misc/athletics, 3, TRUE)
 				H.adjust_skillrank_up_to(/datum/skill/magic/arcane, 4, TRUE)
-				H.mind?.adjust_spellpoints(3)
+				H.mind?.adjust_spellpoints(6)
 				ADD_TRAIT(H, TRAIT_ARCYNE_T3, TRAIT_GENERIC)
 				H.change_stat("willpower", 2)
 
