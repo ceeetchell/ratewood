@@ -86,7 +86,7 @@
 	name = "Arcyne Affinity"
 	desc = "Allows you to learn a spell or two of a certain type once every cycle."
 	miracle = TRUE
-	devotion_cost = 200
+	devotion_cost = 250
 	recharge_time = 40 MINUTES
 	chargetime = 0
 	chargedrain = 0
