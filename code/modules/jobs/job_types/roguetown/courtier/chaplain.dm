@@ -183,8 +183,6 @@ Only when swords are drawn might your true loyalties be discovered."
 			shoes = /obj/item/clothing/shoes/roguetown/sandals
 			armor = /obj/item/clothing/suit/roguetown/shirt/robe/astrata
 	if(H.mind)
-		// H.mind.AddSpell(new /obj/effect/proc_holder/spell/invoked/projectile/divineblast)
-	// -- End of section for god specific bonuses --
 	var/datum/devotion/C = new /datum/devotion(H, H.patron)
 	C.grant_miracles(H, cleric_tier = CLERIC_T1, passive_gain = CLERIC_REGEN_MINOR, devotion_limit = CLERIC_REQ_1)
 
