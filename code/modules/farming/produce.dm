@@ -541,7 +541,7 @@
 	desc = "A wonderful vegetable with many layers and broad flavor profile."
 	slice_path = /obj/item/reagent_containers/food/snacks/rogue/veg/onion_sliced
 	chopping_sound = TRUE
-	dropshrink = 0.7
+	dropshrink = 0.6
 	icon_state = "onion"
 	slices_num = 2
 	tastes = list("spicy sweetness" = 1)
@@ -562,7 +562,7 @@
 	chopping_sound = TRUE
 	rotprocess = SHELFLIFE_LONG
 	seed = /obj/item/seeds/cabbage
-	dropshrink = 0.75
+	dropshrink = 0.7
 
 /obj/item/reagent_containers/food/snacks/grown/potato/rogue
 	name = "potato"
@@ -578,7 +578,7 @@
 	chopping_sound = TRUE
 	rotprocess = null
 	seed = /obj/item/seeds/potato
-	dropshrink = 0.75
+	dropshrink = 0.7
 
 /obj/item/reagent_containers/food/snacks/grown/garlick/rogue
 	name = "garlick bulb"
